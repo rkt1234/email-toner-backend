@@ -1,0 +1,9 @@
+----------------------------------------------------------User----------------------------------------------------------
+1. Columns
+id int 
+name String
+email String
+password String(hashed)
+
+2. Associations 
+Emails

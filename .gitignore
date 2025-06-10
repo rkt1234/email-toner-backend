@@ -6,3 +6,6 @@ node_modules/
 
 # Prisma related files
 prisma/
+
+# database design details
+database design details
