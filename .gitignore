@@ -4,8 +4,5 @@ node_modules/
 # Environment variables
 .env
 
-# Prisma related files
-prisma/
-
 # database design details
 database design details
