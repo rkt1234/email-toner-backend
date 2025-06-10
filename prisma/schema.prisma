@@ -20,4 +20,21 @@ model User {
   password String // Store hashed password
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  emails    Email[]  // 👈 One-to-many relation with Email table
+
+}
+
+model Email {
+  id              Int      @id @default(autoincrement())
+  userId          Int
+  originalEmail   String
+  rewrittenEmail  String
+  tone            String
+  recipientType   String
+  occasion        String
+  createdAt       DateTime @default(now())
+
+  user            User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
 }
