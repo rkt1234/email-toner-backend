@@ -43,3 +43,24 @@ exports.generateEmail = async (req,res) => {
         return res.status(500).json({ error: "Internal Server Error" });
       }
 }
+
+exports.rewriteEmail = async (req, res) => {
+    try {
+      const { originalEmail, tone } = req.body;
+      const userId = req.user?.id;
+  
+      if (!originalEmail || !tone) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+  
+      const prompt = `Rewrite the following email in a ${tone} tone:\n\n"${originalEmail}"`;
+  
+      const rewrittenEmail = await geminiService(prompt);
+  
+      return res.status(200).json({ rewrittenEmail });
+    } catch (error) {
+      console.error("Email rewrite error:", error);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+  };
+  
