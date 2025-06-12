@@ -25,10 +25,17 @@ exports.generateRewritePrompt = ({ originalEmail, tone }) => {
   - Rewrite the following email using a **${tone}** tone.
   - Preserve the original meaning, intent, and structure.
   - Adjust language, phrasing, and word choice to reflect the new tone.
+  - Maintain coherence and structure in the email body
+  - End with a suitable closing
   - Do **not** return multiple versions or add commentary — just return one revised email.
   
   Original Email:
   "${originalEmail}"
   `;
 };
+
+exports.generateSuggestTonePrompt = ({ recipient, occasion }) => {
+    return `Suggest the most appropriate email tone for writing to a ${recipient} regarding ${occasion}. Just reply with the tone name.`;
+  };
+  
 

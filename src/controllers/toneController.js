@@ -1,6 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { generateSuggestTonePrompt } = require('../utils/prompt');
 const { geminiService } = require('../services/geminiService')
 
 
@@ -21,20 +22,20 @@ exports.allTones = (req, res) => {
 
 exports.suggestTone = async (req, res) => {
     try {
-        const { recipient, occasion } = req.body;
-
-        if (!recipient || !occasion) {
-            return res.status(400).json({ error: "Recipient and occasion are required." });
-        }
-
-        const prompt = `Suggest the most appropriate email tone for writing to a ${recipient} regarding ${occasion}. Just reply with the tone name.`;
-
-        const suggestedTone = await geminiService(prompt); // Call your Gemini API wrapper
-
-        return res.status(200).json({ tone: suggestedTone.trim() });
+      const { recipient, occasion } = req.body;
+  
+      if (!recipient || !occasion) {
+        return res.status(400).json({ error: "Recipient and occasion are required." });
+      }
+  
+      const prompt = generateSuggestTonePrompt({ recipient, occasion });
+  
+      const suggestedTone = await geminiService(prompt); // Calls Gemini
+  
+      return res.status(200).json({ tone: suggestedTone.trim() });
     } catch (error) {
-        console.error("Tone suggestion error:", error);
-        return res.status(500).json({ error: "Internal Server Error" });
+      console.error("Tone suggestion error:", error);
+      return res.status(500).json({ error: "Internal Server Error" });
     }
-};
+  };
 
