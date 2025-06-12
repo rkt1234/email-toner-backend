@@ -5,26 +5,42 @@ const { generateEmailPrompt, generateRewritePrompt } = require('../utils/prompt'
 
 exports.userEmailHistory = async (req, res) => {
     const userId = req.user?.id;
-    const { tone } = req.query;
-
+    const { tone, page = 1, limit = 10 } = req.query;
+  
     try {
-        const filters = { userId };
-
-        if (tone) {
-            filters.tone = tone;
-        }
-
-        const emails = await prisma.email.findMany({
-            where: filters,
-            orderBy: { createdAt: 'desc' },
-        });
-
-        res.status(200).json({ emails });
+      const filters = { userId };
+      if (tone) {
+        filters.tone = tone;
+      }
+  
+      const skip = (parseInt(page) - 1) * parseInt(limit);
+      const take = parseInt(limit);
+  
+      const [emails, totalCount] = await Promise.all([
+        prisma.email.findMany({
+          where: filters,
+          orderBy: { createdAt: 'desc' },
+          skip,
+          take,
+        }),
+        prisma.email.count({ where: filters }),
+      ]);
+  
+      res.status(200).json({
+        emails,
+        pagination: {
+          total: totalCount,
+          page: parseInt(page),
+          limit: parseInt(limit),
+          totalPages: Math.ceil(totalCount / limit),
+        },
+      });
     } catch (error) {
-        console.error('Error fetching filtered email history:', error);
-        res.status(500).json({ error: 'Something went wrong while fetching emails.' });
+      console.error('Error fetching filtered email history:', error);
+      res.status(500).json({ error: 'Something went wrong while fetching emails.' });
     }
-}
+  };
+  
 
 exports.generateEmail = async (req, res) => {
     try {
