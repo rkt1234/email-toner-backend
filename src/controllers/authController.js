@@ -3,6 +3,7 @@ const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { triggerWelcomeEmailJob } = require('../services/emailService');
+const {logger} = require('../utils/logger');
 
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
@@ -33,6 +34,7 @@ exports.signup = async (req, res) => {
     const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '7d' });
 
     res.status(201).json({ message: 'User created', token });
+    logger.info('User signed up', { email });
 
     // Trigger welcome email in background
     triggerWelcomeEmailJob({ email, name });
