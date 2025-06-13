@@ -1,18 +1,29 @@
 const jwt = require('jsonwebtoken');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
+
 const JWT_SECRET = process.env.JWT_SECRET || 'your_fallback_secret';
 
-exports.authenticateToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
+exports.authenticateToken = async (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  const token = authHeader?.split(' ')[1];
 
-  // Token format: Bearer <token>
-  const token = authHeader && authHeader.split(' ')[1];
+  if (!token) return res.sendStatus(401);
 
-  if (!token) return res.status(401).json({ error: 'Access token required' });
+  try {
+    const isBlacklisted = await prisma.blacklistedToken.findUnique({
+      where: { token },
+    });
 
-  jwt.verify(token, JWT_SECRET, (err, user) => {
-    if (err) return res.status(403).json({ error: 'Invalid or expired token' });
-    req.user = user; // user contains the decoded token payload
+    if (isBlacklisted) {
+      return res.status(401).json({ error: 'Token is blacklisted. Please login again.' });
+    }
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = { id: decoded.id };
     next();
-  });
+  } catch (err) {
+    return res.status(403).json({ error: 'Invalid token' });
+  }
 };
 

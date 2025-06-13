@@ -70,3 +70,28 @@ exports.signin = async (req, res) => {
     res.status(500).json({ error: 'Server error during login' });
   }
 };
+
+exports.logout = async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) return res.status(401).json({ error: 'No token provided' });
+
+    const token = authHeader.split(' ')[1];
+    const decoded = jwt.decode(token);
+    const expiresAt = new Date(decoded.exp * 1000); // convert to ms
+
+    await prisma.blacklistedToken.create({
+      data: {
+        token,
+        userId: req.user.id,
+        expiresAt,
+      },
+    });
+
+    return res.status(200).json({ message: 'Logged out successfully' });
+  } catch (error) {
+    console.error('Logout error:', error);
+    return res.status(500).json({ error: 'Logout failed' });
+  }
+};
+
