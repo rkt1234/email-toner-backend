@@ -35,7 +35,9 @@ exports.generateRewritePrompt = ({ originalEmail, tone }) => {
 };
 
 exports.generateSuggestTonePrompt = ({ recipient, occasion }) => {
-    return `Suggest the most appropriate email tone for writing to a ${recipient} regarding ${occasion}. Just reply with the tone name.`;
-  };
+  const availableTones = process.env.AVAILABLE_TONES || '';
+  return `Suggest the most appropriate email tone for writing to a ${recipient} regarding ${occasion}. Only choose from the following tones: ${availableTones}. Just reply with the tone name.`;
+};
+
   
 
