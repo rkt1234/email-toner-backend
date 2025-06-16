@@ -37,7 +37,25 @@ const triggerWelcomeEmailJob = ({ email, name }) => {
     .catch(err => console.error(`❌ Failed to start email job:`, err));
 };
 
+const sendOtpVerificationEmail = async ({ email, otp }) => {
+  const msg = {
+    to: email,
+    from: process.env.EMAIL_USER,
+    subject: 'Verify your Email - EmailToner',
+    text: `Your EmailToner verification code is: ${otp}`,
+    html: `
+      <p>Your <strong>EmailToner</strong> verification code is:</p>
+      <h2>${otp}</h2>
+      <p>This code is valid for 10 minutes.</p>
+    `,
+  };
+
+  await sgMail.send(msg);
+  console.log(`✅ OTP email sent to ${email}`);
+};
+
 module.exports = {
   sendWelcomeEmail,
   triggerWelcomeEmailJob,
+  sendOtpVerificationEmail
 };
