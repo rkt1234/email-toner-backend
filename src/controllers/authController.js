@@ -1,7 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { triggerWelcomeEmailJob, sendOtpVerificationEmail} = require('../services/emailService');
+const { triggerWelcomeEmailJob, sendOtpVerificationEmail } = require('../services/emailService');
 const { validateSignup, validateSignin } = require('../services/validationService');
 const logger = require('../utils/logger');
 
@@ -103,8 +103,16 @@ exports.signin = async (req, res) => {
 
   try {
     const user = await prisma.user.findUnique({ where: { email } });
+
     if (!user) {
       return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    // ✅ Enforce email verification
+    if (!user.isVerified) {
+      return res.status(403).json({
+        error: 'Email not verified. Please verify your email before logging in.'
+      });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -113,6 +121,7 @@ exports.signin = async (req, res) => {
     }
 
     const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '7d' });
+
     res.status(200).json({ message: 'Login successful', token });
 
   } catch (err) {
@@ -120,6 +129,7 @@ exports.signin = async (req, res) => {
     res.status(500).json({ error: 'Server error during login' });
   }
 };
+
 
 exports.logout = async (req, res) => {
   try {
