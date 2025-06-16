@@ -54,8 +54,24 @@ const sendOtpVerificationEmail = async ({ email, otp }) => {
   console.log(`✅ OTP email sent to ${email}`);
 };
 
+const sendPasswordResetOtp = async ({ email, otp }) => {
+  const msg = {
+    to: email,
+    from: process.env.EMAIL_USER,
+    subject: 'Reset Your Password - EmailToner',
+    html: `
+      <p>Your <strong>EmailToner</strong> password reset code is:</p>
+      <h2>${otp}</h2>
+      <p>This code will expire in 10 minutes.</p>
+    `,
+  };
+  await sgMail.send(msg);
+};
+
+
 module.exports = {
   sendWelcomeEmail,
   triggerWelcomeEmailJob,
-  sendOtpVerificationEmail
+  sendOtpVerificationEmail,
+  sendPasswordResetOtp
 };

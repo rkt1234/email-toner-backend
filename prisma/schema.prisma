@@ -20,7 +20,9 @@ model User {
   password        String    // Hashed password
   isVerified      Boolean   @default(false)      
   otpCode         String?                       
-  otpExpiresAt    DateTime?                      
+  otpExpiresAt    DateTime?   
+  resetOtpCode      String?
+  resetOtpExpiresAt DateTime?                 
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
   emails          Email[]                        
