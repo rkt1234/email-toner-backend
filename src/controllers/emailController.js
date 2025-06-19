@@ -49,7 +49,6 @@ exports.userEmailHistory = async (req, res) => {
 };
 
 exports.generateEmail = async (req, res) => {
-  console.log("isme aya h")
   const validationError = validateGenerateEmail(req.body);
   if (validationError) {
     return res.status(400).json({ error: validationError });
