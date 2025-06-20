@@ -1,9 +1,9 @@
 const express = require('express')
 const {authenticateToken} = require('../middlewares/authMiddleware')
-const {allTones, suggestTone} = require('../controllers/toneController')
+const {getEmailMetadata, suggestTone} = require('../controllers/toneController')
 const router = express.Router()
 
-router.get('/all', authenticateToken, allTones)
+router.get('/all', authenticateToken, getEmailMetadata)
 router.post('/suggest', authenticateToken, suggestTone)
 
 

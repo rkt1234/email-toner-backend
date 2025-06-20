@@ -6,17 +6,34 @@ const logger = require('../utils/logger');
 
 const prisma = new PrismaClient();
 
-exports.allTones = (req, res) => {
+exports.getEmailMetadata = (req, res) => {
   try {
-    const tonesString = process.env.AVAILABLE_TONES || '';
-    const tones = tonesString.split(',').map(tone => tone.trim()).filter(Boolean);
+    const tones = (process.env.AVAILABLE_TONES || '')
+      .split(',')
+      .map(t => t.trim())
+      .filter(Boolean);
 
-    return res.status(200).json({ tones });
+    const designations = (process.env.AVAILABLE_DESIGNATIONS || '')
+      .split(',')
+      .map(d => d.trim())
+      .filter(Boolean);
+
+    const occasions = (process.env.AVAILABLE_OCCASIONS || '')
+      .split(',')
+      .map(o => o.trim())
+      .filter(Boolean);
+
+    return res.status(200).json({
+      tones,
+      designations,
+      occasions,
+    });
   } catch (error) {
-    logger.error('Error fetching tones:', error);
+    logger.error('Error fetching tone/designation/occasion data:', error);
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
 
 exports.suggestTone = async (req, res) => {
   const validationError = validateSuggestTone(req.body);
