@@ -147,7 +147,6 @@ exports.saveEmail = async (req, res) => {
 
     return res.status(201).json({
       message: 'Email saved successfully',
-      email: savedEmail,
     });
   } catch (error) {
     logger.error('Error saving email', error);
