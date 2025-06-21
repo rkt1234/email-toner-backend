@@ -16,21 +16,41 @@ exports.userEmailHistory = async (req, res) => {
 
   try {
     const filters = { userId };
-    if (tone) {
-      filters.tone = tone;
-    }
-
     const skip = (parseInt(page) - 1) * parseInt(limit);
     const take = parseInt(limit);
 
+    let whereClause;
+
+    if (tone === 'other') {
+      const availableTonesString = process.env.AVAILABLE_TONES || '';
+      const availableTones = availableTonesString
+        .split(',')
+        .map(t => t.trim())
+        .filter(Boolean);
+
+      whereClause = {
+        ...filters,
+        tone: {
+          notIn: availableTones,
+        },
+      };
+    } else if (tone) {
+      whereClause = {
+        ...filters,
+        tone,
+      };
+    } else {
+      whereClause = filters;
+    }
+
     const [emails, totalCount] = await Promise.all([
       prisma.email.findMany({
-        where: filters,
+        where: whereClause,
         orderBy: { createdAt: 'desc' },
         skip,
         take,
       }),
-      prisma.email.count({ where: filters }),
+      prisma.email.count({ where: whereClause }),
     ]);
 
     res.status(200).json({
