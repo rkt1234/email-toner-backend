@@ -1,21 +1,30 @@
 
 
-exports.generateEmailPrompt = ({ designation, tone, occasion }) => {
+exports.generateEmailPrompt = ({ designation, tone, occasion, numberOfWords = 100 }) => {
   return `
-    You are an AI assistant that generates well-structured emails.
-    
-    Instructions:
-    - Write **only one email** based on the following details:
-      - Recipient: ${designation}
-      - Occasion/Purpose: ${occasion}
-      - Tone: ${tone}
-    - The tone, formality, and length should align with the input context.
-    - Start with an appropriate salutation (e.g., "Hi", "Hello", "Dear [Name/Role]") based on the tone and recipient.
-    - Maintain coherence and structure in the email body.
-    - End with a suitable closing (e.g., "Thanks", "Regards", "Best") and include a placeholder for the sender's name.
-    - Do **not** include any explanations, variations, or extra commentary — just return one complete email.
-    `;
+You are an AI assistant that generates professional, well-structured emails.
+
+Instructions:
+- Write **only one email** based on the details below:
+  - Recipient: ${designation}
+  - Occasion/Purpose: ${occasion}
+  - Tone: ${tone}
+  - Word Limit: approximately ${numberOfWords} words
+
+Output Format (strictly follow):
+Subject: <Concise subject line>
+Body: <Main content of the email>
+Outro: <Sign-off like Regards, etc.>
+
+Additional Guidelines:
+- The tone, formality, and length should match the context.
+- Start with a suitable salutation (e.g., "Hi", "Hello", "Dear [Role]").
+- Ensure the body is logically structured and polite.
+- Use a proper sign-off and a placeholder for the sender’s name.
+- Do **not** include commentary, multiple variations, or template labels — only the email as per the format.
+`.trim();
 };
+
 
 exports.generateRewritePrompt = ({ originalEmail, tone, numberOfWords = 100 }) => {
   return `

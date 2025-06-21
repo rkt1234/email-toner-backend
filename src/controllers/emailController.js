@@ -55,16 +55,27 @@ exports.generateEmail = async (req, res) => {
   }
 
   try {
-    const { designation, tone, occasion } = req.body;
-    const prompt = generateEmailPrompt({ designation, tone, occasion });
-    const generatedEmail = await geminiService(prompt);
-
-    return res.status(200).json({ email: generatedEmail });
-  } catch (error) {
+    const { designation, tone, occasion, numberOfWords } = req.body;
+  
+    const prompt = generateEmailPrompt({ designation, tone, occasion, numberOfWords });
+    const rawOutput = await geminiService(prompt);
+  
+    const subjectMatch = rawOutput.match(/Subject:\s*(.*)/i);
+    const bodyMatch = rawOutput.match(/Body:\s*([\s\S]*?)Outro:/i);
+    const outroMatch = rawOutput.match(/Outro:\s*([\s\S]*)/i);  
+  
+    return res.status(200).json({
+      subject: subjectMatch?.[1]?.trim() || '',
+      body: bodyMatch?.[1]?.trim() || '',
+      outro: outroMatch?.[1]?.trim() || ''
+    });
+  }
+   catch (error) {
     logger.error('Email generation error', error);
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
 
 exports.rewriteEmail = async (req, res) => {
   const validationError = validateRewriteEmail(req.body);
@@ -80,7 +91,7 @@ exports.rewriteEmail = async (req, res) => {
 
     const subjectMatch = rawOutput.match(/Subject:\s*(.*)/i);
     const bodyMatch = rawOutput.match(/Body:\s*([\s\S]*?)Outro:/i);
-    const outroMatch = rawOutput.match(/Outro:\s*(.*)/i);
+    const outroMatch = rawOutput.match(/Outro:\s*([\s\S]*)/i);  
 
     return res.status(200).json({
       subject: subjectMatch?.[1]?.trim() || '',
