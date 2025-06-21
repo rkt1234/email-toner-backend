@@ -33,7 +33,7 @@ model Email {
   id              Int      @id @default(autoincrement())
   userId          Int
   originalEmail   String
-  rewrittenEmail  String
+  rewrittenEmail  Json     // ✅ Changed from String to Json
   tone            String
   recipientType   String
   occasion        String
@@ -43,6 +43,7 @@ model Email {
 
   @@index([userId])
 }
+
 
 model BlacklistedToken {
   id         Int      @id @default(autoincrement())

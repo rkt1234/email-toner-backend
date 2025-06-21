@@ -124,6 +124,16 @@ exports.saveEmail = async (req, res) => {
 
     const userId = req.user?.id;
 
+    // Extra safety: validate rewrittenEmail structure
+    if (
+      typeof rewrittenEmail !== 'object' ||
+      !rewrittenEmail.subject ||
+      !rewrittenEmail.body ||
+      !rewrittenEmail.outro
+    ) {
+      return res.status(400).json({ error: 'Invalid or incomplete rewrittenEmail object' });
+    }
+
     const savedEmail = await prisma.email.create({
       data: {
         userId,
@@ -144,3 +154,4 @@ exports.saveEmail = async (req, res) => {
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
