@@ -1,7 +1,7 @@
 
 
 exports.generateEmailPrompt = ({ designation, tone, occasion }) => {
-    return `
+  return `
     You are an AI assistant that generates well-structured emails.
     
     Instructions:
@@ -17,27 +17,25 @@ exports.generateEmailPrompt = ({ designation, tone, occasion }) => {
     `;
 };
 
-exports.generateRewritePrompt = ({ originalEmail, tone }) => {
-    return `
-  You are an AI assistant that rewrites emails.
-  
-  Instructions:
-  - Rewrite the following email using a **${tone}** tone.
-  - Preserve the original meaning, intent, and structure.
-  - Adjust language, phrasing, and word choice to reflect the new tone.
-  - Maintain coherence and structure in the email body
-  - End with a suitable closing
-  - Do **not** return multiple versions or add commentary — just return one revised email.
-  
-  Original Email:
-  "${originalEmail}"
-  `;
+exports.generateRewritePrompt = ({ originalEmail, tone, numberOfWords = 100 }) => {
+  return `
+Rewrite the following email in a ${tone} tone.
+Limit the rewritten email to approximately ${numberOfWords} words.
+Structure the output as follows:
+Subject: <email subject>
+Body: <main content of the email>
+Outro: <sign-off, like Regards, Thanks, etc.>
+
+Original Email:
+"${originalEmail}"
+  `.trim();
 };
+
 
 exports.generateSuggestTonePrompt = ({ recipient, occasion }) => {
   const availableTones = process.env.AVAILABLE_TONES || '';
   return `Suggest the most appropriate email tone for writing to a ${recipient} regarding ${occasion}. Only choose from the following tones: ${availableTones}. Just reply with the tone name.`;
 };
 
-  
+
 

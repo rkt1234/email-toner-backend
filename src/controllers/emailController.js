@@ -73,16 +73,28 @@ exports.rewriteEmail = async (req, res) => {
   }
 
   try {
-    const { originalEmail, tone } = req.body;
-    const prompt = generateRewritePrompt({ originalEmail, tone });
-    const rewrittenEmail = await geminiService(prompt);
+    const { originalEmail, tone, numberOfWords } = req.body;
 
-    return res.status(200).json({ rewrittenEmail });
+    const prompt = generateRewritePrompt({ originalEmail, tone, numberOfWords });
+    const rawOutput = await geminiService(prompt);
+
+    const subjectMatch = rawOutput.match(/Subject:\s*(.*)/i);
+    const bodyMatch = rawOutput.match(/Body:\s*([\s\S]*?)Outro:/i);
+    const outroMatch = rawOutput.match(/Outro:\s*(.*)/i);
+
+    return res.status(200).json({
+      subject: subjectMatch?.[1]?.trim() || '',
+      body: bodyMatch?.[1]?.trim() || '',
+      outro: outroMatch?.[1]?.trim() || ''
+    });
+
   } catch (error) {
     logger.error('Email rewrite error', error);
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
+
 
 exports.saveEmail = async (req, res) => {
   const validationError = validateSaveEmail(req.body);
