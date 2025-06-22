@@ -74,27 +74,41 @@ exports.generateEmail = async (req, res) => {
     return res.status(400).json({ error: validationError });
   }
 
+  const { designation, tone, occasion, numberOfWords } = req.body;
+  const prompt = generateEmailPrompt({ designation, tone, occasion, numberOfWords });
+
   try {
-    const { designation, tone, occasion, numberOfWords } = req.body;
-  
-    const prompt = generateEmailPrompt({ designation, tone, occasion, numberOfWords });
-    const rawOutput = await geminiService(prompt);
-  
-    const subjectMatch = rawOutput.match(/Subject:\s*(.*)/i);
-    const bodyMatch = rawOutput.match(/Body:\s*([\s\S]*?)Outro:/i);
-    const outroMatch = rawOutput.match(/Outro:\s*([\s\S]*)/i);  
-  
-    return res.status(200).json({
-      subject: subjectMatch?.[1]?.trim() || '',
-      body: bodyMatch?.[1]?.trim() || '',
-      outro: outroMatch?.[1]?.trim() || ''
-    });
-  }
-   catch (error) {
+    let subject = '', body = '', outro = '';
+    let attempts = 0;
+    const maxAttempts = 3;
+
+    while (attempts < maxAttempts) {
+      const rawOutput = await geminiService(prompt);
+
+      const subjectMatch = rawOutput.match(/Subject:\s*(.*)/i);
+      const bodyMatch = rawOutput.match(/Body:\s*([\s\S]*?)Outro:/i);
+      const outroMatch = rawOutput.match(/Outro:\s*([\s\S]*)/i);
+
+      subject = subjectMatch?.[1]?.trim() || '';
+      body = bodyMatch?.[1]?.trim() || '';
+      outro = outroMatch?.[1]?.trim() || '';
+
+      if (subject && body && outro) break; // ✅ Success
+      attempts++;
+    }
+
+    if (!subject || !body || !outro) {
+      return res.status(502).json({ error: 'Failed to generate a valid email after multiple attempts' });
+    }
+
+    return res.status(200).json({ subject, body, outro });
+
+  } catch (error) {
     logger.error('Email generation error', error);
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
 
 
 exports.rewriteEmail = async (req, res) => {
@@ -105,25 +119,39 @@ exports.rewriteEmail = async (req, res) => {
 
   try {
     const { originalEmail, tone, numberOfWords } = req.body;
-
     const prompt = generateRewritePrompt({ originalEmail, tone, numberOfWords });
-    const rawOutput = await geminiService(prompt);
 
-    const subjectMatch = rawOutput.match(/Subject:\s*(.*)/i);
-    const bodyMatch = rawOutput.match(/Body:\s*([\s\S]*?)Outro:/i);
-    const outroMatch = rawOutput.match(/Outro:\s*([\s\S]*)/i);  
+    let subject = '', body = '', outro = '';
+    let attempts = 0;
+    const maxAttempts = 3;
 
-    return res.status(200).json({
-      subject: subjectMatch?.[1]?.trim() || '',
-      body: bodyMatch?.[1]?.trim() || '',
-      outro: outroMatch?.[1]?.trim() || ''
-    });
+    while (attempts < maxAttempts) {
+      const rawOutput = await geminiService(prompt);
+
+      const subjectMatch = rawOutput.match(/Subject:\s*(.*)/i);
+      const bodyMatch = rawOutput.match(/Body:\s*([\s\S]*?)Outro:/i);
+      const outroMatch = rawOutput.match(/Outro:\s*([\s\S]*)/i);
+
+      subject = subjectMatch?.[1]?.trim() || '';
+      body = bodyMatch?.[1]?.trim() || '';
+      outro = outroMatch?.[1]?.trim() || '';
+
+      if (subject && body && outro) break; // ✅ Success
+      attempts++;
+    }
+
+    if (!subject || !body || !outro) {
+      return res.status(502).json({ error: 'Failed to generate valid rewritten email after multiple attempts' });
+    }
+
+    return res.status(200).json({ subject, body, outro });
 
   } catch (error) {
     logger.error('Email rewrite error', error);
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
 
 
 
