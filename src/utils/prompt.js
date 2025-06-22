@@ -1,6 +1,7 @@
 
 
 exports.generateEmailPrompt = ({ designation, tone, occasion, numberOfWords = 100 }) => {
+  console.log(numberOfWords)
   return `
 You are an AI assistant that generates professional, well-structured emails.
 
@@ -9,7 +10,7 @@ Instructions:
   - Recipient: ${designation}
   - Occasion/Purpose: ${occasion}
   - Preferred Tone: ${tone}
-  - Word Limit: approximately ${numberOfWords} words
+  - Word Limit: strictly ${numberOfWords} words
 
 Tone Rule:
 - If the provided tone seems inappropriate for the recipient or occasion (e.g., unprofessional or too aggressive), then **silently adjust it** to a more contextually appropriate and respectful tone that preserves the user's intent. 
