@@ -140,11 +140,12 @@ exports.saveEmail = async (req, res) => {
       tone,
       recipientType,
       occasion,
+      isGenerated = false, // ✅ Default to false if not provided
     } = req.body;
 
     const userId = req.user?.id;
 
-    // Extra safety: validate rewrittenEmail structure
+    // ✅ Extra safety: validate rewrittenEmail structure
     if (
       typeof rewrittenEmail !== 'object' ||
       !rewrittenEmail.subject ||
@@ -162,6 +163,7 @@ exports.saveEmail = async (req, res) => {
         tone,
         recipientType,
         occasion,
+        isGenerated, // ✅ Save to DB
       },
     });
 
@@ -173,4 +175,5 @@ exports.saveEmail = async (req, res) => {
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
 

@@ -37,12 +37,14 @@ model Email {
   tone            String
   recipientType   String
   occasion        String
+  isGenerated     Boolean  @default(false) // ✅ New field added
   createdAt       DateTime @default(now())
 
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
+
 
 
 model BlacklistedToken {
