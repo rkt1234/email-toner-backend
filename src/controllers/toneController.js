@@ -27,7 +27,7 @@ exports.getEmailMetadata = (req, res) => {
       occasions,
     });
   } catch (error) {
-    logger.error('Error fetching tone/designation/occasion data:', error);
+    console.log('Error fetching tone/designation/occasion data:', error);
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 };
@@ -46,7 +46,7 @@ exports.suggestTone = async (req, res) => {
 
     return res.status(200).json({ tone: suggestedTone.trim() });
   } catch (error) {
-    logger.error('Tone suggestion error:', error);
+    console.log('Tone suggestion error:', error);
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 };

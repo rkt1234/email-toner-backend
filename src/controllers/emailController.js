@@ -63,7 +63,7 @@ exports.userEmailHistory = async (req, res) => {
       },
     });
   } catch (error) {
-    logger.error('Error fetching filtered email history', error);
+    console.log('Error fetching filtered email history', error);
     res.status(500).json({ error: 'Something went wrong while fetching emails.' });
   }
 };
@@ -104,7 +104,7 @@ exports.generateEmail = async (req, res) => {
     return res.status(200).json({ subject, body, outro });
 
   } catch (error) {
-    logger.error('Email generation error', error);
+    console.log('Email generation error', error);
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 };
@@ -147,7 +147,7 @@ exports.rewriteEmail = async (req, res) => {
     return res.status(200).json({ subject, body, outro });
 
   } catch (error) {
-    logger.error('Email rewrite error', error);
+    console.log('Email rewrite error', error);
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 };
@@ -199,7 +199,7 @@ exports.saveEmail = async (req, res) => {
       message: 'Email saved successfully',
     });
   } catch (error) {
-    logger.error('Error saving email', error);
+    console.log('Error saving email', error);
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 };

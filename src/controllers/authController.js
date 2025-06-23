@@ -44,7 +44,7 @@ exports.signup = async (req, res) => {
     await sendOtpVerificationEmail({ email, otp });
 
     res.status(200).json({ message: 'OTP sent to your email. Please verify to continue.' });
-    logger.info('OTP sent during signup', { email });
+    console.log('OTP sent during signup', { email });
 
   } catch (err) {
     console.error(err);
