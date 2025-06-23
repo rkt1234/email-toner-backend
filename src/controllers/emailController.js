@@ -8,7 +8,7 @@ const {
   validateRewriteEmail,
   validateSaveEmail,
 } = require('../services/validationService');
-const logger = require('../utils/logger');
+const {logger} = require('../utils/logger');
 
 exports.userEmailHistory = async (req, res) => {
   const userId = req.user?.id;
