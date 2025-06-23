@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { triggerWelcomeEmailJob, sendOtpVerificationEmail, sendPasswordResetOtp } = require('../services/emailService');
 const { validateSignup, validateSignin } = require('../services/validationService');
-const logger = require('../utils/logger');
+const {logger} = require('../utils/logger');
 
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
