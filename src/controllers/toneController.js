@@ -1,10 +1,8 @@
-const { PrismaClient } = require('@prisma/client');
 const { generateSuggestTonePrompt } = require('../utils/prompt');
 const { geminiService } = require('../services/geminiService');
 const { validateSuggestTone } = require('../services/validationService');
-const logger = require('../utils/logger');
+const {logger} = require('../utils/logger');
 
-const prisma = new PrismaClient();
 
 exports.getEmailMetadata = (req, res) => {
   try {
