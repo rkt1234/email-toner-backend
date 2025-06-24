@@ -12,7 +12,8 @@ const {logger} = require('../utils/logger');
 
 exports.userEmailHistory = async (req, res) => {
   const userId = req.user?.id;
-  const { tone, page = 1, limit = 10 } = req.query;
+  const limit = 10
+  const { tone, page = 1} = req.query;
 
   try {
     const filters = { userId };
@@ -34,12 +35,13 @@ exports.userEmailHistory = async (req, res) => {
           notIn: availableTones,
         },
       };
-    } else if (tone) {
+    } else if (tone && tone !== 'all') {
       whereClause = {
         ...filters,
         tone,
       };
     } else {
+      // tone is 'all' or undefined
       whereClause = filters;
     }
 
@@ -67,6 +69,7 @@ exports.userEmailHistory = async (req, res) => {
     res.status(500).json({ error: 'Something went wrong while fetching emails.' });
   }
 };
+
 
 exports.generateEmail = async (req, res) => {
   const validationError = validateGenerateEmail(req.body);
