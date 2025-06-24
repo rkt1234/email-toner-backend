@@ -42,7 +42,7 @@ exports.validateRewriteEmail = ({ originalEmail, tone }) => {
 };
 
 exports.validateSaveEmail = ({ originalEmail, rewrittenEmail, tone, recipientType, occasion }) => {
-    if (!originalEmail || !rewrittenEmail || !tone || !recipientType || !occasion) {
+    if (!rewrittenEmail || !tone || !recipientType || !occasion) {
         return 'All fields are required to save the email.';
     }
     return null;
